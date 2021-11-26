@@ -38,8 +38,8 @@ func NewVaultClient(config ClientConfig) *VaultClient {
 	restyClient := resty.New()
 
 	return &VaultClient{
-		accountManagementEndpoint: config.Get("ACCOUNT_MANAGEMENT_API_BASE_URL") + "/vaults",
-		vaultManagementEndpoint:   config.Get("VAULT_MANAGEMENT_API_BASE_URL") + "/vaults",
+		accountManagementEndpoint: config.Get("VGS_ACCOUNT_MANAGEMENT_API_BASE_URL") + "/vaults",
+		vaultManagementEndpoint:   config.Get("VGS_VAULT_MANAGEMENT_API_BASE_URL") + "/vaults",
 		restyClient:               *restyClient,
 		authToken:                 newKeycloak(config).GetToken(),
 	}

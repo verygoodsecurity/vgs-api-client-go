@@ -1,26 +1,20 @@
 package clients
 
 type VgsClientsFacade interface {
-	Organizations() *OrganizationClient
-	Tenants() *VaultClient
+	Organizations(ClientConfig) *OrganizationClient
+	Vaults(ClientConfig) *VaultClient
 }
 
-type facade struct {
-	organizationClient *OrganizationClient
-	vaultsClient       *VaultClient
+type facade struct{}
+
+func (f *facade) Organizations(config ClientConfig) *OrganizationClient {
+	return NewOrganizationClient(config)
 }
 
-func (f *facade) Organizations() *OrganizationClient {
-	return f.organizationClient
+func (f *facade) Vaults(config ClientConfig) *VaultClient {
+	return NewVaultClient(config)
 }
 
-func (f *facade) Tenants() *VaultClient {
-	return f.vaultsClient
-}
-
-func NewVgsFacade(config ClientConfig) VgsClientsFacade {
-	return &facade{
-		organizationClient: NewOrganizationClient(config),
-		vaultsClient:       NewVaultClient(config),
-	}
+func NewVgsFacade() VgsClientsFacade {
+	return &facade{}
 }
