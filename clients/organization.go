@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/go-resty/resty/v2"
 	"github.com/verygoodsecurity/vgs-api-client-go/log"
-	"github.com/verygoodsecurity/vgs-api-client-go/util"
 )
 
 import _ "github.com/joho/godotenv/autoload"
@@ -46,7 +45,7 @@ func NewOrganizationClient(config ClientConfig) *OrganizationClient {
 	return &OrganizationClient{
 		endpoint:    config.Get("ACCOUNT_MANAGEMENT_API_BASE_URL") + "/organizations",
 		restyClient: *restyClient,
-		authToken:   util.GetToken(),
+		authToken:   newKeycloak(config).GetToken(),
 	}
 }
 
