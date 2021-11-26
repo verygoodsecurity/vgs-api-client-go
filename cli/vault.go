@@ -8,40 +8,40 @@ import (
 	"os"
 )
 
-func GetTenants(organizationId string) {
-	tenantClient := clients.NewTenantClient()
+func GetVaults(organizationId string) {
+	tenantClient := clients.NewVaultClient()
 
-	tenants, _ := tenantClient.GetTenants(organizationId)
+	tenants, _ := tenantClient.GetVaults(organizationId)
 
-	renderTenantsTable(tenants)
+	renderVaultsTable(tenants)
 }
 
-func GetTenant(tenantId string) {
-	tenantClient := clients.NewTenantClient()
+func GetVault(vaultId string) {
+	tenantClient := clients.NewVaultClient()
 
-	tenant, _ := tenantClient.Retrieve(tenantId)
+	tenant, _ := tenantClient.RetrieveVault(vaultId)
 
 	response, _ := json.MarshalIndent(tenant, "", "  ")
 	fmt.Println(string(response))
 }
 
-func ProvisionTenant(orgId string, name string, environment string) {
-	tenantClient := clients.NewTenantClient()
+func ProvisionVault(orgId string, name string, environment string) {
+	tenantClient := clients.NewVaultClient()
 
-	tenant, _ := tenantClient.ProvisionTenant(
+	tenant, _ := tenantClient.ProvisionVault(
 		orgId,
-		clients.CreateTenantForm{
+		clients.CreateVaultForm{
 			Name:        name,
 			Environment: environment,
 		})
 
-	GetTenant(tenant.Id)
+	GetVault(tenant.Id)
 }
 
-func SuspendTenant(tenantId string) {
-	tenantClient := clients.NewTenantClient()
+func SuspendVault(tenantId string) {
+	tenantClient := clients.NewVaultClient()
 
-	err := tenantClient.SuspendTenant(tenantId)
+	err := tenantClient.SuspendVault(tenantId)
 	if err != nil {
 		fmt.Println("Failed to delete tenant", err)
 		return
@@ -50,7 +50,7 @@ func SuspendTenant(tenantId string) {
 	fmt.Println("Deleted tenant " + tenantId)
 }
 
-func renderTenantsTable(tenants []clients.Tenant) {
+func renderVaultsTable(tenants []clients.Vault) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
 	table.SetCenterSeparator("")

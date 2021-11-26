@@ -9,7 +9,7 @@ import _ "github.com/joho/godotenv/autoload"
 
 var getCmd = &cobra.Command{
 	Use:   "get",
-	Short: "Get [organizations|tenants]",
+	Short: "Get [organizations|vaults]",
 }
 
 var getOrganizationsCmd = &cobra.Command{
@@ -21,11 +21,11 @@ var getOrganizationsCmd = &cobra.Command{
 }
 
 var getTenantsCmd = &cobra.Command{
-	Use:   "tenants [org_id]",
-	Short: "Get tenants for organization",
+	Use:   "vaults [org_id]",
+	Short: "Get vaults for organization",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		cli.GetTenants(args[0])
+		cli.GetVaults(args[0])
 	},
 }
 

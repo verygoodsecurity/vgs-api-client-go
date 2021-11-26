@@ -9,25 +9,25 @@ import _ "github.com/joho/godotenv/autoload"
 
 var createCmd = &cobra.Command{
 	Use:   "create",
-	Short: "Create [tenant]",
+	Short: "Create [vault]",
 }
 
 func init() {
-	var tenantName string
-	var tenantEnvironment string
+	var vaultName string
+	var vaultEnvironment string
 
 	var createTenantCmd = &cobra.Command{
-		Use:   "tenant [account id]",
-		Short: "Create tenant",
+		Use:   "vault [account id]",
+		Short: "Create vault",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			cli.ProvisionTenant(args[0], tenantName, tenantEnvironment)
+			cli.ProvisionVault(args[0], vaultName, vaultEnvironment)
 		},
 	}
 
 	rootCmd.AddCommand(createCmd)
-	createTenantCmd.Flags().StringVarP(&tenantName, "tenant", "t", "", "Tenant name (required)")
-	createTenantCmd.Flags().StringVarP(&tenantEnvironment, "environment", "e", "SANDBOX", "Tenant environment")
-	createTenantCmd.MarkFlagRequired("tenant")
+	createTenantCmd.Flags().StringVarP(&vaultName, "vault", "v", "", "Vault name (required)")
+	createTenantCmd.Flags().StringVarP(&vaultEnvironment, "environment", "e", "SANDBOX", "Vault environment")
+	createTenantCmd.MarkFlagRequired("vault")
 	createCmd.AddCommand(createTenantCmd)
 }

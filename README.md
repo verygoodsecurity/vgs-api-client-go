@@ -53,12 +53,12 @@ vgs-api-client describe organization AC3g11N5RmChXA1uMGsFfRyj
 }
 ```
 
-### Tenants
+### Vaults
 
-**get tenants <org_id>**
+**get vaults <org_id>**
 
 ```console
-vgs-api-client get tenants AC3g11N5RmChXA1uMGsFfRyj
+vgs-api-client get vaults AC3g11N5RmChXA1uMGsFfRyj
 
 # output
 tntol44iuix	Watchdog Provision Test 2021-02-03-11	SANDBOX	2021-02-03T11:04:19.740Z
@@ -67,10 +67,10 @@ tntiyvzmaqu	Watchdog Provision Test 2021-01-28-20	SANDBOX	2021-01-28T20:02:19.73
 ...
 ```
 
-**describe tenant <tenant_id>**
+**describe vault <vault_id>**
 
 ```console
-vgs-api-client describe tenant tntog8icclh
+vgs-api-client describe vaults tntog8icclh
 
 # output
 {
@@ -83,9 +83,9 @@ vgs-api-client describe tenant tntog8icclh
 }
 ```
 
-**create tenant <org_id>**
+**create vault <org_id>**
 ```console
-vgs-api-client create tenant AC3g11N5RmChXA1uMGsFfRyj --tenant "zinovii 01"
+vgs-api-client create vault AC3g11N5RmChXA1uMGsFfRyj --vault "zinovii 01"
 
 # output
 {
@@ -98,8 +98,8 @@ vgs-api-client create tenant AC3g11N5RmChXA1uMGsFfRyj --tenant "zinovii 01"
 }
 ```
 
-**delete tenant <tenant_id>**
+**delete vault <vault_id>**
 
 ```console
-vgs-api-client delete tenant tntvwyrkd5j
+vgs-api-client delete vault tntvwyrkd5j
 ```
