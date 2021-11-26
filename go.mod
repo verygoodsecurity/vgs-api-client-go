@@ -1,4 +1,4 @@
-module vgs-api-client-go
+module github.com/verygoodsecurity/vgs-api-client-go
 
 go 1.15
 
