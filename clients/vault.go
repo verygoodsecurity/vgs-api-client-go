@@ -5,7 +5,6 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/verygoodsecurity/vgs-api-client-go/log"
 	"github.com/verygoodsecurity/vgs-api-client-go/util"
-	"os"
 )
 
 import _ "github.com/joho/godotenv/autoload"
@@ -36,12 +35,12 @@ type Vault struct {
 	internalId  string
 }
 
-func NewVaultClient() *VaultClient {
+func NewVaultClient(config ClientConfig) *VaultClient {
 	restyClient := resty.New()
 
 	return &VaultClient{
-		accountManagementEndpoint: os.Getenv("ACCOUNT_MANAGEMENT_API_BASE_URL") + "/vaults",
-		vaultManagementEndpoint:   os.Getenv("VAULT_MANAGEMENT_API_BASE_URL") + "/vaults",
+		accountManagementEndpoint: config.Get("ACCOUNT_MANAGEMENT_API_BASE_URL") + "/vaults",
+		vaultManagementEndpoint:   config.Get("VAULT_MANAGEMENT_API_BASE_URL") + "/vaults",
 		restyClient:               *restyClient,
 		authToken:                 util.GetToken(),
 	}

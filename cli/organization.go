@@ -9,7 +9,7 @@ import (
 )
 
 func GetOrganizations() {
-	organizationClient := clients.NewOrganizationClient()
+	organizationClient := clients.NewOrganizationClient(clients.EnvironmentConfig())
 
 	organizations, _ := organizationClient.GetOrganizations()
 
@@ -17,7 +17,7 @@ func GetOrganizations() {
 }
 
 func DescribeOrganization(orgId string) {
-	organizationClient := clients.NewOrganizationClient()
+	organizationClient := clients.NewOrganizationClient(clients.EnvironmentConfig())
 
 	organization, _ := organizationClient.DescribeOrganization(orgId)
 

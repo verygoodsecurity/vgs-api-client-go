@@ -9,7 +9,7 @@ import (
 )
 
 func GetVaults(organizationId string) {
-	tenantClient := clients.NewVaultClient()
+	tenantClient := clients.NewVaultClient(clients.EnvironmentConfig())
 
 	tenants, _ := tenantClient.GetVaults(organizationId)
 
@@ -17,18 +17,18 @@ func GetVaults(organizationId string) {
 }
 
 func GetVault(vaultId string) {
-	tenantClient := clients.NewVaultClient()
+	vaultClient := clients.NewVaultClient(clients.EnvironmentConfig())
 
-	tenant, _ := tenantClient.RetrieveVault(vaultId)
+	tenant, _ := vaultClient.RetrieveVault(vaultId)
 
 	response, _ := json.MarshalIndent(tenant, "", "  ")
 	fmt.Println(string(response))
 }
 
 func ProvisionVault(orgId string, name string, environment string) {
-	tenantClient := clients.NewVaultClient()
+	vaultClient := clients.NewVaultClient(clients.EnvironmentConfig())
 
-	tenant, _ := tenantClient.ProvisionVault(
+	tenant, _ := vaultClient.ProvisionVault(
 		orgId,
 		clients.CreateVaultForm{
 			Name:        name,
@@ -39,9 +39,9 @@ func ProvisionVault(orgId string, name string, environment string) {
 }
 
 func SuspendVault(tenantId string) {
-	tenantClient := clients.NewVaultClient()
+	vaultClient := clients.NewVaultClient(clients.EnvironmentConfig())
 
-	err := tenantClient.SuspendVault(tenantId)
+	err := vaultClient.SuspendVault(tenantId)
 	if err != nil {
 		fmt.Println("Failed to delete tenant", err)
 		return
@@ -50,7 +50,7 @@ func SuspendVault(tenantId string) {
 	fmt.Println("Deleted tenant " + tenantId)
 }
 
-func renderVaultsTable(tenants []clients.Vault) {
+func renderVaultsTable(vaults []clients.Vault) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
 	table.SetCenterSeparator("")
@@ -61,12 +61,12 @@ func renderVaultsTable(tenants []clients.Vault) {
 	table.SetTablePadding("\t") // pad with tabs
 	table.SetNoWhiteSpace(true)
 
-	for _, tenant := range tenants {
+	for _, vault := range vaults {
 		table.Append([]string{
-			tenant.Id,
-			tenant.Name,
-			tenant.Environment,
-			tenant.CreatedAt})
+			vault.Id,
+			vault.Name,
+			vault.Environment,
+			vault.CreatedAt})
 	}
 
 	table.Render()

@@ -5,7 +5,6 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/verygoodsecurity/vgs-api-client-go/log"
 	"github.com/verygoodsecurity/vgs-api-client-go/util"
-	"os"
 )
 
 import _ "github.com/joho/godotenv/autoload"
@@ -41,11 +40,11 @@ type OrganizationClient struct {
 	authToken   string
 }
 
-func NewOrganizationClient() *OrganizationClient {
+func NewOrganizationClient(config ClientConfig) *OrganizationClient {
 	restyClient := resty.New()
 
 	return &OrganizationClient{
-		endpoint:    os.Getenv("ACCOUNT_MANAGEMENT_API_BASE_URL") + "/organizations",
+		endpoint:    config.Get("ACCOUNT_MANAGEMENT_API_BASE_URL") + "/organizations",
 		restyClient: *restyClient,
 		authToken:   util.GetToken(),
 	}
