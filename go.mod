@@ -1,4 +1,4 @@
-module vgs-api-client
+module vgs-api-client-go
 
 go 1.15
 
