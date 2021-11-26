@@ -9,15 +9,15 @@ import _ "github.com/joho/godotenv/autoload"
 
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "Delete [tenant]",
+	Short: "Delete [vault]",
 }
 
 var deleteTenantCmd = &cobra.Command{
-	Use:   "tenant",
-	Short: "Delete tenant",
+	Use:   "vault",
+	Short: "Delete vault",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		cli.SuspendTenant(args[0])
+		cli.SuspendVault(args[0])
 	},
 }
 

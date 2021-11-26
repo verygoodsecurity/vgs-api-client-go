@@ -9,15 +9,15 @@ import _ "github.com/joho/godotenv/autoload"
 
 var describeCmd = &cobra.Command{
 	Use:   "describe",
-	Short: "Describe [organization|tenant]",
+	Short: "Describe [organization|vault]",
 }
 
-var describeTenantCmd = &cobra.Command{
-	Use:   "tenant",
-	Short: "Describe tenant",
+var describeVaultCmd = &cobra.Command{
+	Use:   "vault",
+	Short: "Describe vault",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		cli.GetTenant(args[0])
+		cli.GetVault(args[0])
 	},
 }
 
@@ -32,6 +32,6 @@ var describeOrganizationCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(describeCmd)
-	describeCmd.AddCommand(describeTenantCmd)
+	describeCmd.AddCommand(describeVaultCmd)
 	describeCmd.AddCommand(describeOrganizationCmd)
 }
