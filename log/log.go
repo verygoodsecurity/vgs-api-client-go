@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/sirupsen/logrus"
-	"vgs-api-client/config"
+	"github.com/verygoodsecurity/vgs-api-client-go/config"
 )
 
 // Logger defines a set of methods for writing application logs. Derived from and

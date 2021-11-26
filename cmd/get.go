@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"vgs-api-client/cli"
+	"github.com/verygoodsecurity/vgs-api-client-go/cli"
 )
 
 import _ "github.com/joho/godotenv/autoload"

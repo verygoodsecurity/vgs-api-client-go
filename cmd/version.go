@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"vgs-api-client/version"
+	"github.com/verygoodsecurity/vgs-api-client-go/version"
 )
 
 // versionCmd represents the version command

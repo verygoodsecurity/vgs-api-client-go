@@ -1,7 +1,7 @@
 package main
 
 import (
-	"vgs-api-client/cmd"
+	"github.com/verygoodsecurity/vgs-api-client-go/cmd"
 )
 
 func main() {

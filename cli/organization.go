@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
+	"github.com/verygoodsecurity/vgs-api-client-go/clients"
 	"os"
-	"vgs-api-client/clients"
 )
 
 func GetOrganizations() {

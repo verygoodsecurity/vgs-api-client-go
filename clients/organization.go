@@ -3,9 +3,9 @@ package clients
 import (
 	"encoding/json"
 	"github.com/go-resty/resty/v2"
+	"github.com/verygoodsecurity/vgs-api-client-go/log"
+	"github.com/verygoodsecurity/vgs-api-client-go/util"
 	"os"
-	"vgs-api-client/log"
-	"vgs-api-client/util"
 )
 
 import _ "github.com/joho/godotenv/autoload"
