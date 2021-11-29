@@ -32,7 +32,7 @@ func (r *RouteClient) GetRoute(vault, routeId string) (routeJson string, err err
 	if err != nil {
 		return "", errors.Wrap(err, "API request failed")
 	}
-	if response.Status() == "404" {
+	if response.StatusCode() == 404 {
 		return "", errors.Wrap(err, "Route not found")
 	}
 	return string(response.Body()), errors.Wrap(err, "API request failed")
@@ -61,7 +61,7 @@ func (r *RouteClient) ImportRoute(vault string, vgsYaml io.Reader) (id string, e
 		SetHeader("VGS-Tenant", vault).
 		SetBody(requestBody).
 		Put(fmt.Sprintf("%s/rule-chains/%s", r.apiBase, id))
-	if response.Status() != "200" || response.Status() != "201" {
+	if response.StatusCode() != 200 || response.StatusCode() != 201 {
 		return "", errors.Errorf("API returned %s", response.Status())
 	}
 
