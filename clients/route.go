@@ -53,9 +53,13 @@ func (r *RouteClient) ImportRoute(vault string, vgsYaml io.Reader) error {
 		return errors.Wrap(err, "failed to convert YAML to JSON")
 	}
 
+	requestBody, err := tools.WrapJSONList("data", routeJson)
+	if err != nil {
+		return errors.Wrap(err, "failed to construct request body")
+	}
 	_, err = r.request().
 		SetHeader("VGS-Tenant", vault).
-		SetBody(routeJson).
+		SetBody(requestBody).
 		Put(fmt.Sprintf("%s/rule-chains/%s", r.apiBase, id))
 	return errors.Wrap(err, "API request failed")
 }

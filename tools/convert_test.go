@@ -25,6 +25,14 @@ func TestJsonEquals(t *testing.T) {
 	assert.False(JsonEquals(`{"test": ["1", "2"]}`, `{"test": [1, 2]}`))
 }
 
+func TestWrapJSONList(t *testing.T) {
+	assert := asserting.New(t)
+
+	wrapped, err := WrapJSONList("wrapper", `{"test": 1}`)
+	assert.Nil(err)
+	assert.Equal(`{"wrapper":[{"test":1}]}`, wrapped)
+}
+
 func TestYaml2Json(t *testing.T) {
 	assert := asserting.New(t)
 	jsonStr, err := Yaml2Json(`data:
