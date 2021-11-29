@@ -61,7 +61,7 @@ func (r *RouteClient) ImportRoute(vault string, vgsYaml io.Reader) (id string, e
 		SetHeader("VGS-Tenant", vault).
 		SetBody(requestBody).
 		Put(fmt.Sprintf("%s/rule-chains/%s", r.apiBase, id))
-	if response.StatusCode() != 200 || response.StatusCode() != 201 {
+	if response.StatusCode() != 200 && response.StatusCode() != 201 {
 		return "", errors.Errorf("API returned %s", response.Status())
 	}
 
