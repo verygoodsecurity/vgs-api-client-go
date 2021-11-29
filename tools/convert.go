@@ -34,13 +34,13 @@ func Yaml2Json(yamlStr string) (jsonStr string, err error) {
 	return string(b), errors.Wrap(err, "Failed to marshal JSON")
 }
 
-func WrapJSONList(wrapperField, restJson string) (string, error) {
+func WrapJSON(wrapperField, restJson string) (string, error) {
 	var parsed interface{}
 	if err := json.Unmarshal([]byte(restJson), &parsed); err != nil {
 		return "", err
 	}
-	wrapped := map[string][]interface{}{
-		wrapperField: {parsed},
+	wrapped := map[string]interface{}{
+		wrapperField: parsed,
 	}
 	converted, err := json.Marshal(wrapped)
 	return string(converted), errors.Wrap(err, "failed to marshal JSON")
