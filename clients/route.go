@@ -24,9 +24,17 @@ func NewRouteClient(config ClientConfig) *RouteClient {
 }
 
 func (r *RouteClient) GetRoute(vault, routeId string) (routeJson string, err error) {
+	// TODO need to return a struct but it's ok for now
+
 	response, err := r.request().
 		SetHeader("VGS-Tenant", vault).
 		Get(fmt.Sprintf("%s/rule-chains/%s", r.apiBase, routeId))
+	if err != nil {
+		return "", errors.Wrap(err, "API request failed")
+	}
+	if response.Status() == "404" {
+		return "", errors.Wrap(err, "Route not found")
+	}
 	return string(response.Body()), errors.Wrap(err, "API request failed")
 }
 
