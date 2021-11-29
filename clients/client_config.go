@@ -18,7 +18,9 @@ type DynamicClientConfig struct {
 }
 
 func DynamicConfig() *DynamicClientConfig {
-	return &DynamicClientConfig{}
+	return &DynamicClientConfig{
+		configurations: make(map[string]string),
+	}
 }
 
 func EnvironmentConfig() *EnvironmentClientConfig {

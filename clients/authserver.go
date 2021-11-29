@@ -28,6 +28,7 @@ func (a *keycloak) GetToken() string {
 		gocloak.TokenOptions{
 			ClientID:     strptr(a.config.Get("VGS_CLIENT_ID")),
 			ClientSecret: strptr(a.config.Get("VGS_CLIENT_SECRET")),
+			GrantType:    strptr("client_credentials"),
 		})
 
 	if err != nil {
