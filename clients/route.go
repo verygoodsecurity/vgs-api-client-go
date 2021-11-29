@@ -23,6 +23,13 @@ func NewRouteClient(config ClientConfig) *RouteClient {
 	}
 }
 
+func (r *RouteClient) GetRoute(vault, routeId string) (routeJson string, err error) {
+	response, err := r.request().
+		SetHeader("VGS-Tenant", vault).
+		Get(fmt.Sprintf("%s/rule-chains/%s", r.apiBase, routeId))
+	return string(response.Body()), errors.Wrap(err, "API request failed")
+}
+
 func (r *RouteClient) ImportRoute(vault string, vgsYaml io.Reader) error {
 	yaml, err := reader2string(vgsYaml)
 	if err != nil {
