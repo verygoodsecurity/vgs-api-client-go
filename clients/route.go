@@ -12,8 +12,16 @@ import (
 
 type RouteClient struct {
 	apiBase     string
-	restyClient resty.Client
+	restyClient *resty.Client
 	authToken   string
+}
+
+func NewRouteClient(config ClientConfig) *RouteClient {
+	return &RouteClient{
+		apiBase:     config.Get("VGS_VAULT_MANAGEMENT_API_BASE_URL"),
+		restyClient: resty.New(),
+		authToken:   newKeycloak(config).GetToken(),
+	}
 }
 
 type idHolder struct {
