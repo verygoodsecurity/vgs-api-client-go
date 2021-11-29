@@ -1,7 +1,6 @@
 package clients
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/pkg/errors"
@@ -24,35 +23,33 @@ func NewRouteClient(config ClientConfig) *RouteClient {
 	}
 }
 
-type idHolder struct {
-	Id string `json:"id"`
-}
-
-func (r *RouteClient) ImportRoute(tenant string, vgsYaml io.Reader) error {
+func (r *RouteClient) ImportRoute(vault string, vgsYaml io.Reader) error {
 	yaml, err := reader2string(vgsYaml)
 	if err != nil {
 		return errors.Wrap(err, "failed to read YAML")
 	}
+	id, err := tools.RouteIdFromYaml(yaml)
+	if err != nil {
+		return errors.Wrap(err, "failed to extract ID from route")
+	}
+
 	routeJson, err := tools.Yaml2Json(yaml)
 	if err != nil {
 		return errors.Wrap(err, "failed to convert YAML to JSON")
 	}
 
-	var holder idHolder
-	err = json.Unmarshal([]byte(routeJson), &holder)
-	if err != nil || holder.Id == "" {
-		return errors.Wrap(err, "failed to extract ID from route")
-	}
-
-	response, err := r.request().
-		SetHeader("VGS-Tenant", tenant).
+	_, err = r.request().
+		SetHeader("VGS-Tenant", vault).
 		SetBody(routeJson).
-		Put(fmt.Sprintf("%s/rule-chains/%s", r.apiBase, holder.Id))
-	if err != nil {
-		return errors.Wrap(err, "API request failed")
-	}
-	_ = response
-	return nil
+		Put(fmt.Sprintf("%s/rule-chains/%s", r.apiBase, id))
+	return errors.Wrap(err, "API request failed")
+}
+
+func (r *RouteClient) DeleteRoute(vault, id string) error {
+	_, err := r.request().
+		SetHeader("VGS-Tenant", vault).
+		Delete(fmt.Sprintf("%s/rule-chains/%s", r.apiBase, id))
+	return errors.Wrap(err, "API request failed")
 }
 
 func (r *RouteClient) request() *resty.Request {
