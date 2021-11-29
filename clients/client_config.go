@@ -6,10 +6,20 @@ type ClientConfig interface {
 	Get(name string) string
 }
 
-type EnvironmentClientConfig struct{}
+type EnvironmentClientConfig struct {
+	fallback ClientConfig
+}
+
+func (e *EnvironmentClientConfig) WithFallback(fallback ClientConfig) *EnvironmentClientConfig {
+	e.fallback = fallback
+	return e
+}
 
 func (e *EnvironmentClientConfig) Get(name string) string {
-	return os.Getenv(name)
+	if value := os.Getenv(name); value != "" {
+		return value
+	}
+	return e.fallback.Get(name)
 }
 
 type DynamicClientConfig struct {
