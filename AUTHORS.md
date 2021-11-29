@@ -6,4 +6,5 @@
 
 ## Contributors
 
-None yet. Why not be the first?
+- Nestor Sokil [nestorsokil](https://github.com/nestorsokil)
+- ...

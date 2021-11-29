@@ -2,6 +2,7 @@ package tools
 
 import (
 	asserting "github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
@@ -25,12 +26,21 @@ func TestJsonEquals(t *testing.T) {
 	assert.False(JsonEquals(`{"test": ["1", "2"]}`, `{"test": [1, 2]}`))
 }
 
-func TestWrapJSONList(t *testing.T) {
+func TestWrapJSON(t *testing.T) {
 	assert := asserting.New(t)
 
 	wrapped, err := WrapJSON("wrapper", `{"test": 1}`)
 	assert.Nil(err)
 	assert.Equal(`{"wrapper":{"test":1}}`, wrapped)
+}
+
+func TestWrapJson_InvalidString(t *testing.T) {
+	assert := asserting.New(t)
+
+	json, err := WrapJSON("wrapper", `invalid json{}`)
+	assert.NotNil(err)
+	assert.True(strings.Contains(err.Error(), "failed to unmarshal JSON"))
+	assert.True(json == "")
 }
 
 func TestYaml2Json(t *testing.T) {
@@ -140,5 +150,13 @@ func TestYaml2Json(t *testing.T) {
   }
 } ]
 	}`))
+}
 
+func TestYaml2Json_InvalidString(t *testing.T) {
+	assert := asserting.New(t)
+
+	jsonString, err := Yaml2Json("test test: test:  test")
+	assert.NotNil(err)
+	assert.True(strings.Contains(err.Error(), "failed to unmarshal YAML"))
+	assert.True(jsonString == "")
 }

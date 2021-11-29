@@ -27,17 +27,17 @@ func JsonEquals(json1, json2 string) (bool, error) {
 func Yaml2Json(yamlStr string) (jsonStr string, err error) {
 	var body interface{}
 	if err := yaml.Unmarshal([]byte(yamlStr), &body); err != nil {
-		return "", errors.Wrap(err, "Failed to unmarshal YAML")
+		return "", errors.Wrap(err, "failed to unmarshal YAML")
 	}
 	body = convert(body)
 	b, err := json.Marshal(body)
-	return string(b), errors.Wrap(err, "Failed to marshal JSON")
+	return string(b), errors.Wrap(err, "failed to marshal JSON")
 }
 
 func WrapJSON(wrapperField, restJson string) (string, error) {
 	var parsed interface{}
 	if err := json.Unmarshal([]byte(restJson), &parsed); err != nil {
-		return "", err
+		return "", errors.Wrap(err, "failed to unmarshal JSON")
 	}
 	wrapped := map[string]interface{}{
 		wrapperField: parsed,
