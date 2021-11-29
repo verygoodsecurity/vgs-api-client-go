@@ -38,30 +38,30 @@ func (r *RouteClient) GetRoute(vault, routeId string) (routeJson string, err err
 	return string(response.Body()), errors.Wrap(err, "API request failed")
 }
 
-func (r *RouteClient) ImportRoute(vault string, vgsYaml io.Reader) error {
+func (r *RouteClient) ImportRoute(vault string, vgsYaml io.Reader) (id string, err error) {
 	yaml, err := reader2string(vgsYaml)
 	if err != nil {
-		return errors.Wrap(err, "failed to read YAML")
+		return "", errors.Wrap(err, "failed to read YAML")
 	}
-	id, err := tools.RouteIdFromYaml(yaml)
+	id, err = tools.RouteIdFromYaml(yaml)
 	if err != nil {
-		return errors.Wrap(err, "failed to extract ID from route")
+		return "", errors.Wrap(err, "failed to extract ID from route")
 	}
 
 	routeJson, err := tools.Yaml2Json(yaml)
 	if err != nil {
-		return errors.Wrap(err, "failed to convert YAML to JSON")
+		return "", errors.Wrap(err, "failed to convert YAML to JSON")
 	}
 
 	requestBody, err := tools.WrapJSONList("data", routeJson)
 	if err != nil {
-		return errors.Wrap(err, "failed to construct request body")
+		return "", errors.Wrap(err, "failed to construct request body")
 	}
 	_, err = r.request().
 		SetHeader("VGS-Tenant", vault).
 		SetBody(requestBody).
 		Put(fmt.Sprintf("%s/rule-chains/%s", r.apiBase, id))
-	return errors.Wrap(err, "API request failed")
+	return id, errors.Wrap(err, "API request failed")
 }
 
 func (r *RouteClient) DeleteRoute(vault, id string) error {
