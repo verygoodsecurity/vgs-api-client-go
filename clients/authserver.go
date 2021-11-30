@@ -31,8 +31,10 @@ func (a *keycloak) GetToken() (string, error) {
 			ClientSecret: strptr(a.config.Get("VGS_CLIENT_SECRET")),
 			GrantType:    strptr("client_credentials"),
 		})
-
-	return token.AccessToken, errors.Wrap(err, "failed to authenticate")
+	if err != nil {
+		return "", errors.Wrap(err, "failed to authenticate")
+	}
+	return token.AccessToken, nil
 }
 
 func strptr(str string) *string {
