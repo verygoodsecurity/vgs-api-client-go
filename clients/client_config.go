@@ -19,7 +19,10 @@ func (e *EnvironmentClientConfig) Get(name string) string {
 	if value := os.Getenv(name); value != "" {
 		return value
 	}
-	return e.fallback.Get(name)
+	if e.fallback != nil {
+		return e.fallback.Get(name)
+	}
+	return ""
 }
 
 type DynamicClientConfig struct {
@@ -42,7 +45,10 @@ func (d *DynamicClientConfig) Get(name string) string {
 	if ok {
 		return result
 	}
-	return d.fallback.Get(name)
+	if d.fallback != nil {
+		return d.fallback.Get(name)
+	}
+	return ""
 }
 
 func (d *DynamicClientConfig) WithFallback(fallback ClientConfig) *DynamicClientConfig {
