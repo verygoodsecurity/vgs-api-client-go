@@ -3,7 +3,7 @@ package clients
 import (
 	"encoding/json"
 	"github.com/go-resty/resty/v2"
-	"github.com/verygoodsecurity/vgs-api-client-go/log"
+	"github.com/pkg/errors"
 )
 
 import _ "github.com/joho/godotenv/autoload"
@@ -34,37 +34,33 @@ type OrganizationEnvironment struct {
 }
 
 type OrganizationClient struct {
-	endpoint    string
-	restyClient resty.Client
-	authToken   string
+	endpoint string
+	client
 }
 
 func NewOrganizationClient(config ClientConfig) *OrganizationClient {
-	restyClient := resty.New()
-
 	return &OrganizationClient{
-		endpoint:    config.Get("ACCOUNT_MANAGEMENT_API_BASE_URL") + "/organizations",
-		restyClient: *restyClient,
-		authToken:   newKeycloak(config).GetToken(),
+		endpoint: config.Get("ACCOUNT_MANAGEMENT_API_BASE_URL") + "/organizations",
+		client: client{
+			rest: resty.New(),
+			auth: newKeycloak(config),
+		},
 	}
 }
 
-func (c *OrganizationClient) request() *resty.Request {
-	return c.restyClient.R().
-		SetHeader("Accept", "application/vnd.api+json").
-		SetHeader("Content-Type", "application/vnd.api+json").
-		SetAuthToken(c.authToken)
-}
-
 func (c *OrganizationClient) GetOrganizations() ([]Organization, error) {
-	resp, err := c.request().Get(c.endpoint)
+	request, err := c.client.request()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "API request failed")
+	}
+	resp, err := request.Get(c.endpoint)
+	if err != nil {
+		return nil, errors.Wrap(err, "API request failed")
 	}
 
 	var organizationsAPIData organizationsAPIData
 	if err := json.Unmarshal(resp.Body(), &organizationsAPIData); err != nil {
-		log.Fatalf("error deserializing data")
+		return nil, errors.Wrap(err, "error deserializing data")
 	}
 
 	var organizations []Organization
@@ -93,14 +89,18 @@ func (c *OrganizationClient) DescribeOrganization(orgId string) (*Organization, 
 }
 
 func (c *OrganizationClient) getOrganization(orgId string) (*Organization, error) {
-	resp, err := c.request().Get(c.endpoint + "/" + orgId)
+	request, err := c.client.request()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "API request failed")
+	}
+	resp, err := request.Get(c.endpoint + "/" + orgId)
+	if err != nil {
+		return nil, errors.Wrap(err, "API request failed")
 	}
 
 	var organizationAPIData organizationAPIData
 	if err := json.Unmarshal(resp.Body(), &organizationAPIData); err != nil {
-		log.Fatalf("error deserializing data")
+		return nil, errors.Wrap(err, "error deserializing data")
 	}
 
 	organization := Organization{
@@ -115,14 +115,18 @@ func (c *OrganizationClient) getOrganization(orgId string) (*Organization, error
 }
 
 func (c *OrganizationClient) getOrganizationEnvironments(orgId string) ([]OrganizationEnvironment, error) {
-	resp, err := c.request().Get(c.endpoint + "/" + orgId + "/environments")
+	request, err := c.client.request()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "API request failed")
+	}
+	resp, err := request.Get(c.endpoint + "/" + orgId + "/environments")
+	if err != nil {
+		return nil, errors.Wrap(err, "API request failed")
 	}
 
 	var organizationEnvironmentsAPIData organizationEnvironmentsAPIData
 	if err := json.Unmarshal(resp.Body(), &organizationEnvironmentsAPIData); err != nil {
-		log.Fatalf("error deserializing data")
+		return nil, errors.Wrap(err, "error deserializing data")
 	}
 
 	var environments []OrganizationEnvironment
@@ -139,14 +143,18 @@ func (c *OrganizationClient) getOrganizationEnvironments(orgId string) ([]Organi
 }
 
 func (c *OrganizationClient) getOrganizationUsers(orgId string) ([]OrganizationUser, error) {
-	resp, err := c.request().Get(c.endpoint + "/" + orgId + "/users")
+	request, err := c.client.request()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "API request failed")
+	}
+	resp, err := request.Get(c.endpoint + "/" + orgId + "/users")
+	if err != nil {
+		return nil, errors.Wrap(err, "API request failed")
 	}
 
 	var organizationUsersAPIData organizationUsersAPIData
 	if err := json.Unmarshal(resp.Body(), &organizationUsersAPIData); err != nil {
-		log.Fatalf("error deserializing data")
+		return nil, errors.Wrap(err, "error deserializing data")
 	}
 
 	var users []OrganizationUser

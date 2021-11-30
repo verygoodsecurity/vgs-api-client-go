@@ -2,12 +2,13 @@ package clients
 
 import (
 	"github.com/Nerzal/gocloak/v8"
+	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
 
 // private interface for internal usage
 type authServerClient interface {
-	GetToken() string
+	GetToken() (string, error)
 }
 
 type keycloak struct {
@@ -20,7 +21,7 @@ func newKeycloak(config ClientConfig) *keycloak {
 	}
 }
 
-func (a *keycloak) GetToken() string {
+func (a *keycloak) GetToken() (string, error) {
 	client := gocloak.NewClient(a.config.Get("VGS_KEYCLOAK_URL"))
 	ctx := context.Background()
 	token, err := client.GetToken(ctx,
@@ -31,11 +32,7 @@ func (a *keycloak) GetToken() string {
 			GrantType:    strptr("client_credentials"),
 		})
 
-	if err != nil {
-		panic("Login failed:" + err.Error())
-	}
-
-	return token.AccessToken
+	return token.AccessToken, errors.Wrap(err, "failed to authenticate")
 }
 
 func strptr(str string) *string {

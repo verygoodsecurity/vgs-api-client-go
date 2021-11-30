@@ -3,7 +3,7 @@ package clients
 import (
 	"encoding/json"
 	"github.com/go-resty/resty/v2"
-	"github.com/verygoodsecurity/vgs-api-client-go/log"
+	"github.com/pkg/errors"
 )
 
 import _ "github.com/joho/godotenv/autoload"
@@ -11,8 +11,7 @@ import _ "github.com/joho/godotenv/autoload"
 type VaultClient struct {
 	accountManagementEndpoint string
 	vaultManagementEndpoint   string
-	restyClient               resty.Client
-	authToken                 string
+	client
 }
 
 type CreateVaultForm struct {
@@ -35,21 +34,14 @@ type Vault struct {
 }
 
 func NewVaultClient(config ClientConfig) *VaultClient {
-	restyClient := resty.New()
-
 	return &VaultClient{
 		accountManagementEndpoint: config.Get("VGS_ACCOUNT_MANAGEMENT_API_BASE_URL") + "/vaults",
 		vaultManagementEndpoint:   config.Get("VGS_VAULT_MANAGEMENT_API_BASE_URL") + "/vaults",
-		restyClient:               *restyClient,
-		authToken:                 newKeycloak(config).GetToken(),
+		client: client{
+			rest: resty.New(),
+			auth: newKeycloak(config),
+		},
 	}
-}
-
-func (c *VaultClient) request() *resty.Request {
-	return c.restyClient.R().
-		SetHeader("Accept", "application/vnd.api+json").
-		SetHeader("Content-Type", "application/vnd.api+json").
-		SetAuthToken(c.authToken)
 }
 
 func (c *VaultClient) GetVaults(organizationId string) ([]Vault, error) {
@@ -102,14 +94,16 @@ func (c *VaultClient) RetrieveVault(vaultId string) (*Vault, error) {
 }
 
 func (c *VaultClient) SuspendVault(vaultId string) error {
-	vault, _ := c.RetrieveVault(vaultId)
-
-	_, err := c.request().Delete(c.accountManagementEndpoint + "/" + vault.internalId)
+	vault, err := c.RetrieveVault(vaultId)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to find vault by ID")
 	}
-
-	return nil
+	request, err := c.client.request()
+	if err != nil {
+		return errors.Wrap(err, "API request failed")
+	}
+	_, err = request.Delete(c.accountManagementEndpoint + "/" + vault.internalId)
+	return errors.Wrap(err, "API request failed")
 }
 
 func (c *VaultClient) ProvisionVault(orgId string, createVaultForm CreateVaultForm) (*Vault, error) {
@@ -131,45 +125,55 @@ func (c *VaultClient) ProvisionVault(orgId string, createVaultForm CreateVaultFo
 	}
 
 	payload, err := json.Marshal(data)
-
-	resp, err := c.request().SetBody(payload).Post(c.accountManagementEndpoint)
+	request, err := c.client.request()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "API request failed")
+	}
+	resp, err := request.SetBody(payload).Post(c.accountManagementEndpoint)
+	if err != nil {
+		return nil, errors.Wrap(err, "API request failed")
 	}
 
 	var respBody vaultAPIData
 	if err := json.Unmarshal(resp.Body(), &respBody); err != nil {
-		log.Fatalf("error deserializing data")
+		return nil, errors.Wrap(err, "error deserializing data")
 	}
 
 	return c.RetrieveVault(respBody.Data.Attributes.Identifier)
 }
 
 func (c *VaultClient) getVaultFromVaultManagement(vaultId string) (*vaultAPIData, error) {
-	resp, err := c.request().SetHeader("VGS-Tenant", vaultId).Get(c.vaultManagementEndpoint + "/" + vaultId)
+	request, err := c.client.request()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "API request failed")
+	}
+	resp, err := request.SetHeader("VGS-Tenant", vaultId).Get(c.vaultManagementEndpoint + "/" + vaultId)
+	if err != nil {
+		return nil, errors.Wrap(err, "API request failed")
 	}
 
 	var data vaultAPIData
 	if err := json.Unmarshal(resp.Body(), &data); err != nil {
-		log.Fatalf("error deserializing data")
+		return nil, errors.Wrap(err, "error deserializing data")
 	}
 
 	return &data, nil
 }
 
 func (c *VaultClient) getVaultsFromAccountManagement() (*vaultsAPIData, error) {
-	resp, err := c.request().Get(c.accountManagementEndpoint)
+	request, err := c.client.request()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "API request failed")
+	}
+	resp, err := request.Get(c.accountManagementEndpoint)
+	if err != nil {
+		return nil, errors.Wrap(err, "API request failed")
 	}
 
 	var data vaultsAPIData
 	if err := json.Unmarshal(resp.Body(), &data); err != nil {
-		log.Fatalf("error deserializing data")
+		return nil, errors.Wrap(err, "error deserializing data")
 	}
-
 	return &data, nil
 }
 
