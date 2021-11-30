@@ -8,26 +8,15 @@ import (
 
 // Set dev VGS_CLIENT_ID/VGS_CLIENT_SECRET in env to run
 
-func TestRouteGet(t *testing.T) {
-	assert := asserting.New(t)
-	route, err := NewRouteClient(DynamicConfig().
-		WithFallback(EnvironmentConfig()).
-		AddParameter("VGS_VAULT_MANAGEMENT_API_BASE_URL", "https://api.verygoodsecurity.io").
-		AddParameter("VGS_KEYCLOAK_URL", "https://auth.verygoodsecurity.io").
-		AddParameter("VGS_KEYCLOAK_REALM", "vgs")).
-		GetRoute("tntbcduzut5", "f954c07f-4d5f-4a3a-b620-d804cbbac2e2")
-	assert.Nil(err)
-	assert.NotNil(route)
-}
+var routeClient = NewRouteClient(DynamicConfig().
+	WithFallback(EnvironmentConfig()).
+	AddParameter("VGS_VAULT_MANAGEMENT_API_BASE_URL", "https://api.verygoodsecurity.io").
+	AddParameter("VGS_KEYCLOAK_URL", "https://auth.verygoodsecurity.io").
+	AddParameter("VGS_KEYCLOAK_REALM", "vgs"))
 
 func TestImportRoute(t *testing.T) {
 	assert := asserting.New(t)
-	client := NewRouteClient(DynamicConfig().
-		WithFallback(EnvironmentConfig()).
-		AddParameter("VGS_VAULT_MANAGEMENT_API_BASE_URL", "https://api.verygoodsecurity.io").
-		AddParameter("VGS_KEYCLOAK_URL", "https://auth.verygoodsecurity.io").
-		AddParameter("VGS_KEYCLOAK_REALM", "vgs"))
-	routeId, err := client.ImportRoute("tntbcduzut5", strings.
+	routeId, err := routeClient.ImportRoute("tntbcduzut5", strings.
 		NewReader(`id: 04b2e1b7-fb60-472f-a79f-af7e2353f122
 type: rule_chain
 attributes:
@@ -76,7 +65,15 @@ attributes:
   updated_at: '2021-11-26T18:10:08'`))
 	assert.Nil(err)
 	assert.Equal("04b2e1b7-fb60-472f-a79f-af7e2353f122", routeId)
-	route, err := client.GetRoute("tntbcduzut5", "04b2e1b7-fb60-472f-a79f-af7e2353f122")
+	route, err := routeClient.GetRoute("tntbcduzut5", "04b2e1b7-fb60-472f-a79f-af7e2353f122")
 	assert.Nil(err)
-	assert.True(route != "")
+	assert.NotEqual("", route)
+}
+
+func TestRouteGet_NotExisting(t *testing.T) {
+	assert := asserting.New(t)
+	route, err := routeClient.GetRoute("tntbcduzut5", "f954c07f-4d5f-4a3a-b620-d804cbbac2e2")
+	assert.Equal("", route)
+	assert.NotNil(err)
+	assert.Contains(err.Error(), "Route not found")
 }

@@ -37,7 +37,7 @@ func (r *RouteClient) GetRoute(vault, routeId string) (routeJson string, err err
 		return "", errors.Wrap(err, "API request failed")
 	}
 	if response.StatusCode() == 404 {
-		return "", errors.Wrap(err, "Route not found")
+		return "", errors.New("Route not found")
 	}
 	return string(response.Body()), errors.Wrap(err, "API request failed")
 }
