@@ -65,7 +65,10 @@ func (c *VaultClient) GetVaults(organizationId string) ([]Vault, error) {
 }
 
 func (c *VaultClient) RetrieveVault(vaultId string) (*Vault, error) {
-	vaultsAPIData, _ := c.getVaultsFromAccountManagement()
+	vaultsAPIData, err := c.getVaultsFromAccountManagement()
+	if err != nil {
+		return nil, errors.Wrap(err, "Accounts API request failed")
+	}
 
 	var accountManagementVault vaultAPI
 
@@ -76,7 +79,10 @@ func (c *VaultClient) RetrieveVault(vaultId string) (*Vault, error) {
 		}
 	}
 
-	vaultData, _ := c.getVaultFromVaultManagement(vaultId)
+	vaultData, err := c.getVaultFromVaultManagement(vaultId)
+	if err != nil {
+		return nil, errors.Wrap(err, "Vault Management API request failed")
+	}
 	vaultManagementVault := vaultData.Data
 
 	// Unfortunately we have to merge vault information from two APIs
